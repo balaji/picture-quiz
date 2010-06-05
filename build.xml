@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="picture-quiz" basedir="." default="signjar">
+	<target name="clean">
+		<delete file="C:/Users/balajid/Videos/picturequiz.jar" />
+	</target>
+	<target name="compile" depends="clean">
+		<javac srcdir="src" destdir="bin" />
+	</target>
+	<target name="build" depends="compile">
+		<jar jarfile="C:/Users/balajid/Videos/picturequiz.jar" basedir="bin" />
+	</target>
+	<target name="signjar" depends="build">
+		<input message="Please enter keystore password:" addproperty="keypass" />
+		<signjar jar="C:/Users/balajid/Videos/picturequiz.jar"
+			keystore="C:/keystore/key" alias="damodaran.balaji@gmail.com"
+			storepass="${keypass}" />
+	</target>
+</project>
