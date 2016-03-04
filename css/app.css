@@ -1,0 +1,23 @@
+.frame {
+  width: 400px;
+  height: 400px;
+  background-color: bisque;
+  color: white;
+  font-family: "Helvetica", sans-serif, serif;
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  height: 100%;
+  border-spacing: 0;
+}
+
+td {
+  background-color: navy;
+  cursor: pointer;
+}
+
+td:hover {
+  background-color: blue;
+}
