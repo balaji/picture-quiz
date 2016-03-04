@@ -1,18 +1,30 @@
-var Row = React.createClass({
-  displayName: 'Row',
+var Cell = React.createClass({
+  displayName: 'Cell',
+
+  getInitialState: function () {
+    return { display: 'visible' };
+  },
 
   hide: function () {
-    console.log(this.props);
+    this.setState({ display: 'hidden' });
   },
+
+  render: function () {
+    return React.createElement(
+      'td',
+      { style: { visibility: this.state.display }, onClick: this.hide },
+      this.props.value
+    );
+  }
+});
+
+var Row = React.createClass({
+  displayName: 'Row',
 
   render: function () {
     var columns = [];
     for (var i = 1; i <= this.props.columns; i++) {
-      columns.push(React.createElement(
-        'td',
-        { onClick: this.hide, key: i + this.props.multiplier },
-        i + this.props.multiplier
-      ));
+      columns.push(React.createElement(Cell, { key: i + this.props.multiplier, value: i + this.props.multiplier }));
     }
     return React.createElement(
       'tr',
@@ -126,7 +138,7 @@ var Container = React.createClass({
   displayName: 'Container',
 
   render: function () {
-    return React.createElement(Picker, { initialCount: 100 });
+    return React.createElement(Picker, { initialCount: 25 });
   }
 });
 

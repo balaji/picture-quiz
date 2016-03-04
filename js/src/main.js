@@ -1,13 +1,22 @@
-var Row = React.createClass({
+var Cell = React.createClass({
+  getInitialState: function() {
+      return {display: 'visible'};
+  },
+
   hide: function() {
-    console.log(this.props);
+    this.setState({display: 'hidden'});
   },
 
   render: function() {
+    return (<td style={{visibility: this.state.display}} onClick={this.hide}>{this.props.value}</td>);
+  }
+});
+
+var Row = React.createClass({
+  render: function() {
     var columns = [];
     for(var i = 1; i <= this.props.columns; i++) {
-      columns.push(<td onClick={this.hide} key={i + this.props.multiplier}>
-        {i + this.props.multiplier}</td>);
+      columns.push(<Cell key={i + this.props.multiplier} value={i + this.props.multiplier} />);
     }
     return(<tr>{columns}</tr>);
   }
@@ -84,7 +93,7 @@ var Picker = React.createClass({
 var Container = React.createClass({
   render: function() {
     return (
-      <Picker initialCount={100}/>
+      <Picker initialCount={25}/>
     );
   }
 });
