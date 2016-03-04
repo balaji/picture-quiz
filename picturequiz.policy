@@ -1,7 +1,0 @@
-/* AUTOMATICALLY GENERATED ON Sat Jun 05 16:55:49 IST 2010*/
-/* DO NOT EDIT */
-
-grant {
-  permission java.io.FilePermission "<<ALL FILES>>", "read";
-};
-
