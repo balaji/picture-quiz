@@ -1,106 +1,24 @@
-var Cell = React.createClass({
-  displayName: 'Cell',
+
+var Container = React.createClass({
+  displayName: "Container",
 
   getInitialState: function () {
-    return { display: 'visible' };
+    return {
+      question: 1,
+      data: [{}]
+    };
   },
 
-  hide: function () {
-    this.setState({ display: 'hidden' });
+  componentDidMount: function () {
+    this.getData = $.getJSON('data/quiz.json', function (data) {
+      this.setState({ data: data });
+    }.bind(this));
   },
 
-  render: function () {
-    return React.createElement(
-      'td',
-      { style: { visibility: this.state.display }, onClick: this.hide },
-      this.props.value
-    );
-  }
-});
-
-var Row = React.createClass({
-  displayName: 'Row',
-
-  render: function () {
-    var columns = [];
-    for (var i = 1; i <= this.props.columns; i++) {
-      columns.push(React.createElement(Cell, { key: i + this.props.multiplier, value: i + this.props.multiplier }));
-    }
-    return React.createElement(
-      'tr',
-      null,
-      columns
-    );
-  }
-});
-
-var Table = React.createClass({
-  displayName: 'Table',
-
-  render: function () {
-    var tbody = [];
-    for (var i = 0; i < this.props.rows - 1; i++) {
-      tbody.push(React.createElement(Row, { multiplier: this.props.columns * i, key: i, columns: this.props.columns }));
-    }
-
-    if (this.props.lastRow === 0) {
-      var multiplier = this.props.startsWith ? this.props.startsWith : this.props.columns * (this.props.rows - 1);
-      tbody.push(React.createElement(Row, { multiplier: multiplier, key: multiplier - 1, columns: this.props.columns }));
-      return React.createElement(
-        'table',
-        null,
-        React.createElement(
-          'tbody',
-          null,
-          tbody
-        )
-      );
-    }
-
-    var topHeight = Math.round(400 / this.props.rows * (this.props.rows - 1));
-    return React.createElement(
-      'div',
-      null,
-      React.createElement(
-        'div',
-        { style: { height: topHeight + 'px' } },
-        React.createElement(
-          'table',
-          null,
-          React.createElement(
-            'tbody',
-            null,
-            tbody
-          )
-        )
-      ),
-      React.createElement(
-        'div',
-        { style: { height: 400 - topHeight + 'px' } },
-        React.createElement(Table, { startsWith: (this.props.rows - 1) * this.props.columns, rows: 1, columns: this.props.lastRow, lastRow: 0 })
-      )
-    );
-  }
-});
-
-var Frame = React.createClass({
-  displayName: 'Frame',
-
-  render: function () {
-    return React.createElement(
-      'div',
-      { className: 'frame' },
-      React.createElement(Table, { rows: this.props.rows, columns: this.props.columns, lastRow: this.props.lastRow })
-    );
-  }
-});
-
-var Picker = React.createClass({
-  displayName: 'Picker',
-
-  getInitialState: function () {
-    return { count: this.props.initialCount };
+  componentWillUnmount: function () {
+    this.getData.abort();
   },
+
   decrement: function () {
     this.setState({ count: this.state.count - 1 });
   },
@@ -110,35 +28,129 @@ var Picker = React.createClass({
   },
 
   render: function () {
-    var sqrt = Math.sqrt(this.state.count);
+    var clues = this.state.data[this.state.question - 1];
+    if (clues["clues"] === undefined) return React.createElement("div", null);
+    var totalClues = clues["clues"].length;
+    var sqrt = Math.sqrt(totalClues);
     var rows = Math.round(sqrt);
     var columns = Math.ceil(sqrt);
-    var lastRow = this.state.count % columns;
+    var lastRow = totalClues % columns;
 
     return React.createElement(
-      'div',
+      "div",
       null,
       React.createElement(
-        'button',
+        "button",
         { onClick: this.decrement },
-        '-'
+        "-"
       ),
       this.state.count,
       React.createElement(
-        'button',
+        "button",
         { onClick: this.increment },
-        '+'
+        "+"
       ),
-      React.createElement(Frame, { rows: rows, columns: columns, lastRow: lastRow })
+      React.createElement(Frame, { rows: rows, columns: columns, lastRow: lastRow, clues: clues })
     );
   }
 });
 
-var Container = React.createClass({
-  displayName: 'Container',
+var Frame = React.createClass({
+  displayName: "Frame",
 
   render: function () {
-    return React.createElement(Picker, { initialCount: 25 });
+    return React.createElement(
+      "div",
+      { className: "frame", style: { backgroundImage: 'url(' + this.props.clues["image"] + ')' } },
+      React.createElement(Table, { rows: this.props.rows, columns: this.props.columns, lastRow: this.props.lastRow, clues: this.props.clues["clues"] })
+    );
+  }
+});
+
+var Table = React.createClass({
+  displayName: "Table",
+
+  render: function () {
+    var tbody = [];
+    for (var i = 0; i < this.props.rows - 1; i++) {
+      tbody.push(React.createElement(Row, { multiplier: this.props.columns * i, key: i, columns: this.props.columns, clues: this.props.clues }));
+    }
+
+    if (this.props.lastRow === 0) {
+      var multiplier = this.props.startsWith ? this.props.startsWith : this.props.columns * (this.props.rows - 1);
+      tbody.push(React.createElement(Row, { multiplier: multiplier, key: multiplier - 1, columns: this.props.columns, clues: this.props.clues }));
+      return React.createElement(
+        "table",
+        null,
+        React.createElement(
+          "tbody",
+          null,
+          tbody
+        )
+      );
+    }
+
+    var topHeight = Math.round(400 / this.props.rows * (this.props.rows - 1));
+    return React.createElement(
+      "div",
+      null,
+      React.createElement(
+        "div",
+        { style: { height: topHeight + 'px' } },
+        React.createElement(
+          "table",
+          null,
+          React.createElement(
+            "tbody",
+            null,
+            tbody
+          )
+        )
+      ),
+      React.createElement(
+        "div",
+        { style: { height: 400 - topHeight + 'px' } },
+        React.createElement(Table, { startsWith: (this.props.rows - 1) * this.props.columns, rows: 1,
+          columns: this.props.lastRow, lastRow: 0, clues: this.props.clues })
+      )
+    );
+  }
+});
+
+var Row = React.createClass({
+  displayName: "Row",
+
+  render: function () {
+    var columns = [];
+    for (var i = 1; i <= this.props.columns; i++) {
+      columns.push(React.createElement(Cell, { key: i + this.props.multiplier, value: i + this.props.multiplier, clue: this.props.clues[i - 1 + this.props.multiplier] }));
+    }
+    return React.createElement(
+      "tr",
+      null,
+      columns
+    );
+  }
+});
+
+var Cell = React.createClass({
+  displayName: "Cell",
+
+  getInitialState: function () {
+    return { display: 'visible' };
+  },
+
+  hide: function () {
+    this.setState({ display: 'hidden' });
+    console.log(this.props.clue);
+  },
+
+  render: function () {
+    return React.createElement(
+      "td",
+      { style: { visibility: this.state.display }, onClick: this.hide },
+      this.props.value
+    );
   }
 });
 
