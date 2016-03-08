@@ -1,11 +1,10 @@
 
 var Container = React.createClass({
-  displayName: "Container",
+  displayName: 'Container',
 
   getInitialState: function () {
     return {
-      question: 1,
-      data: [{}]
+      question: 1
     };
   },
 
@@ -20,16 +19,25 @@ var Container = React.createClass({
   },
 
   decrement: function () {
-    this.setState({ count: this.state.count - 1 });
+    if (this.state.question > 1) {
+      this.setState({ question: this.state.question - 1 });
+    }
   },
 
   increment: function () {
-    this.setState({ count: this.state.count + 1 });
+    if (this.state.question < this.state.data.length) {
+      this.setState({ question: this.state.question + 1 });
+      $('table > tbody > tr > td').css('visibility', 'visible');
+    }
   },
 
   render: function () {
+    if (this.state.data === undefined) return React.createElement(
+      'div',
+      null,
+      'Loading data...'
+    );
     var clues = this.state.data[this.state.question - 1];
-    if (clues["clues"] === undefined) return React.createElement("div", null);
     var totalClues = clues["clues"].length;
     var sqrt = Math.sqrt(totalClues);
     var rows = Math.round(sqrt);
@@ -37,38 +45,70 @@ var Container = React.createClass({
     var lastRow = totalClues % columns;
 
     return React.createElement(
-      "div",
-      null,
+      'div',
+      { className: 'container' },
       React.createElement(
-        "button",
-        { onClick: this.decrement },
-        "-"
+        'div',
+        { className: 'navigateQuestions' },
+        React.createElement(
+          'button',
+          { onClick: this.decrement },
+          'Prev'
+        ),
+        this.state.question,
+        ' of ',
+        this.state.data.length,
+        React.createElement(
+          'button',
+          { onClick: this.increment },
+          'Next'
+        )
       ),
-      this.state.count,
       React.createElement(
-        "button",
-        { onClick: this.increment },
-        "+"
-      ),
-      React.createElement(Frame, { rows: rows, columns: columns, lastRow: lastRow, clues: clues })
+        'div',
+        { className: 'flex' },
+        React.createElement(Frame, { rows: rows, columns: columns, lastRow: lastRow, clues: clues }),
+        React.createElement(StatusFrame, null)
+      )
+    );
+  }
+});
+
+var StatusFrame = React.createClass({
+  displayName: 'StatusFrame',
+
+  render: function () {
+    return React.createElement(
+      'div',
+      { className: 'status' },
+      'Clues:'
     );
   }
 });
 
 var Frame = React.createClass({
-  displayName: "Frame",
+  displayName: 'Frame',
+
+  hideAll: function () {
+    $('table > tbody > tr > td').css('visibility', 'hidden');
+  },
 
   render: function () {
     return React.createElement(
-      "div",
-      { className: "frame", style: { backgroundImage: 'url(' + this.props.clues["image"] + ')' } },
-      React.createElement(Table, { rows: this.props.rows, columns: this.props.columns, lastRow: this.props.lastRow, clues: this.props.clues["clues"] })
+      'div',
+      { className: 'frame', style: { backgroundImage: 'url(' + this.props.clues["image"] + ')' } },
+      React.createElement(Table, { rows: this.props.rows, columns: this.props.columns, lastRow: this.props.lastRow, clues: this.props.clues["clues"] }),
+      React.createElement(
+        'button',
+        { onClick: this.hideAll },
+        'Show Answer'
+      )
     );
   }
 });
 
 var Table = React.createClass({
-  displayName: "Table",
+  displayName: 'Table',
 
   render: function () {
     var tbody = [];
@@ -80,10 +120,10 @@ var Table = React.createClass({
       var multiplier = this.props.startsWith ? this.props.startsWith : this.props.columns * (this.props.rows - 1);
       tbody.push(React.createElement(Row, { multiplier: multiplier, key: multiplier - 1, columns: this.props.columns, clues: this.props.clues }));
       return React.createElement(
-        "table",
+        'table',
         null,
         React.createElement(
-          "tbody",
+          'tbody',
           null,
           tbody
         )
@@ -92,23 +132,23 @@ var Table = React.createClass({
 
     var topHeight = Math.round(400 / this.props.rows * (this.props.rows - 1));
     return React.createElement(
-      "div",
+      'div',
       null,
       React.createElement(
-        "div",
+        'div',
         { style: { height: topHeight + 'px' } },
         React.createElement(
-          "table",
+          'table',
           null,
           React.createElement(
-            "tbody",
+            'tbody',
             null,
             tbody
           )
         )
       ),
       React.createElement(
-        "div",
+        'div',
         { style: { height: 400 - topHeight + 'px' } },
         React.createElement(Table, { startsWith: (this.props.rows - 1) * this.props.columns, rows: 1,
           columns: this.props.lastRow, lastRow: 0, clues: this.props.clues })
@@ -118,7 +158,7 @@ var Table = React.createClass({
 });
 
 var Row = React.createClass({
-  displayName: "Row",
+  displayName: 'Row',
 
   render: function () {
     var columns = [];
@@ -126,7 +166,7 @@ var Row = React.createClass({
       columns.push(React.createElement(Cell, { key: i + this.props.multiplier, value: i + this.props.multiplier, clue: this.props.clues[i - 1 + this.props.multiplier] }));
     }
     return React.createElement(
-      "tr",
+      'tr',
       null,
       columns
     );
@@ -134,21 +174,17 @@ var Row = React.createClass({
 });
 
 var Cell = React.createClass({
-  displayName: "Cell",
-
-  getInitialState: function () {
-    return { display: 'visible' };
-  },
+  displayName: 'Cell',
 
   hide: function () {
-    this.setState({ display: 'hidden' });
+    $(this.tdRef).css('visibility', 'hidden');
     console.log(this.props.clue);
   },
 
   render: function () {
     return React.createElement(
-      "td",
-      { style: { visibility: this.state.display }, onClick: this.hide },
+      'td',
+      { ref: ref => this.tdRef = ref, onClick: this.hide },
       this.props.value
     );
   }

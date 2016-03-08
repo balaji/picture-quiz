@@ -2,8 +2,7 @@
 var Container = React.createClass({
   getInitialState: function() {
     return {
-      question: 1,
-      data: [{}]
+      question: 1
     }
   },
 
@@ -18,16 +17,21 @@ var Container = React.createClass({
   },
 
   decrement: function() {
-    this.setState({count: this.state.count - 1});
+    if(this.state.question > 1) {
+      this.setState({question: this.state.question - 1});
+    }
   },
 
   increment: function() {
-    this.setState({count: this.state.count + 1});
+    if(this.state.question < this.state.data.length) {
+      this.setState({question: this.state.question + 1});
+      $('table > tbody > tr > td').css('visibility', 'visible');
+    }
   },
 
   render: function() {
+    if(this.state.data === undefined) return(<div>Loading data...</div>);
     var clues = this.state.data[this.state.question - 1];
-    if(clues["clues"] === undefined) return(<div/>);
     var totalClues = clues["clues"].length
     var sqrt = Math.sqrt(totalClues);
     var rows = Math.round(sqrt);
@@ -35,21 +39,41 @@ var Container = React.createClass({
     var lastRow = totalClues % columns;
 
     return (
-      <div>
-        <button onClick={this.decrement}>-</button>
-        {this.state.count}
-        <button onClick={this.increment}>+</button>
+      <div className="container">
+        <div className="navigateQuestions">
+          <button onClick={this.decrement}>Prev</button>
+          {this.state.question} of {this.state.data.length}
+          <button onClick={this.increment}>Next</button>
+        </div>
+        <div className="flex">
         <Frame rows={rows} columns={columns} lastRow={lastRow} clues={clues}/>
+        <StatusFrame />
+        </div>
       </div>
     );
   }
 });
 
+var StatusFrame = React.createClass({
+  render: function() {
+    return(
+      <div className="status">
+        Clues:
+      </div>
+    )
+  }
+});
+
 var Frame = React.createClass({
+  hideAll: function() {
+    $('table > tbody > tr > td').css('visibility', 'hidden');
+  },
+
   render: function () {
     return (
       <div className="frame" style={{backgroundImage: 'url(' + this.props.clues["image"] + ')'}}>
         <Table rows={this.props.rows} columns={this.props.columns} lastRow={this.props.lastRow} clues={this.props.clues["clues"]} />
+        <button onClick={this.hideAll}>Show Answer</button>
       </div>
     );
   }
@@ -96,17 +120,13 @@ var Row = React.createClass({
 });
 
 var Cell = React.createClass({
-  getInitialState: function() {
-      return {display: 'visible'};
-  },
-
   hide: function() {
-    this.setState({display: 'hidden'});
+    $(this.tdRef).css('visibility', 'hidden');
     console.log(this.props.clue);
   },
 
   render: function() {
-    return (<td style={{visibility: this.state.display}} onClick={this.hide}>{this.props.value}</td>);
+    return (<td ref={(ref) => this.tdRef = ref} onClick={this.hide}>{this.props.value}</td>);
   }
 });
 

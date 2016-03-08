@@ -5,13 +5,25 @@
     "clues": [
       "This is clue number 1", "This is clue number 2", "This is clue number 3",
       "This is clue number 4", "This is clue number 5", "This is clue number 6",
-      "This is clue number 7", "This is clue number 8", "This is clue number 9",
-      "This is clue number 10", "This is clue number 11", "This is clue number 12",
-      "This is clue number 13", "This is clue number 14", "This is clue number 15",
-      "This is clue number 16", "This is clue number 17", "This is clue number 18",
-      "This is clue number 19", "This is clue number 20", "This is clue number 21",
-      "This is clue number 22", "This is clue number 23", "This is clue number 24",
-      "This is clue number 25"
+      "This is clue number 7", "This is clue number 8", "This is clue number 9"
+    ]
+  },
+  {
+    "image": "http://static.dnaindia.com/sites/default/files/2014/01/12/1944309.jpg",
+    "answer": "Michael Schumacher",
+    "clues": [
+      "This is clue number 1", "This is clue number 2", "This is clue number 3",
+      "This is clue number 4", "This is clue number 5", "This is clue number 6",
+      "This is clue number 7", "This is clue number 8", "This is clue number 9"
+    ]
+  },
+  {
+    "image": "http://wildchildsports.com/wp-content/uploads/2015/10/Michael-Jordan.jpg",
+    "answer": "Michael Jordan",
+    "clues": [
+      "This is clue number 1", "This is clue number 2", "This is clue number 3",
+      "This is clue number 4", "This is clue number 5", "This is clue number 6",
+      "This is clue number 7", "This is clue number 8", "This is clue number 9"
     ]
   }
 ]

@@ -1,8 +1,29 @@
+.container {
+  width: 100%;
+  font-family: "Helvetica", sans-serif, serif;
+}
+
+button {
+  margin: 5px;
+  font-size: 1em;
+}
+
+.flex {
+  display: flex;
+}
+
 .frame {
   width: 400px;
   height: 400px;
-  font-family: "Helvetica", sans-serif, serif;
   text-align: center;
+}
+
+.navigateQuestions {
+    width: 400px;
+    text-align: center;
+}
+.status {
+  /*flex-grow: 1;*/
 }
 
 table {
